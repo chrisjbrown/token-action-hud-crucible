@@ -1,0 +1,63 @@
+{
+  "id": "token-action-hud-crucible",
+  "title": "Token Action HUD Crucible",
+  "description": "Token Action HUD is a repositionable HUD of actions for a selected token",
+  "authors": [
+    {
+      "name": "chrisjosbrown",
+      "url": "https://github.com/chrisjosbrown"
+    }
+  ],
+  "url": "This is auto replaced",
+  "flags": {},
+  "version": "0.0.1",
+  "compatibility": {
+    "minimum": "12.331",
+    "verified": "12.331"
+  },
+  "esmodules": ["./scripts/token-action-hud-crucible.min.js"],
+  "scripts": [],
+  "styles": ["./styles/tah-crucible.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "packs": [],
+  "relationships": {
+    "systems": [
+      {
+        "id": "crucible",
+        "compatibility": {
+          "minimum": "0.6.0",
+          "maximum": "0.6.1",
+          "verified": "0.6.1"
+        }
+      }
+    ],
+    "requires": [
+      {
+        "id": "token-action-hud-core",
+        "type": "module",
+        "compatibility": {
+          "minimum": "2.0.0",
+          "maximum": "2.0.99",
+          "verified": "2.0.0"
+        }
+      }
+    ],
+    "optional": [],
+    "flags": {
+      "optional": []
+    }
+  },
+  "socket": false,
+  "manifest": "This is auto replaced",
+  "download": "This is auto replaced",
+  "readme": "https://github.com/Larkinabout/fvtt-token-action-hud-crucible#readme",
+  "protected": false,
+  "coreTranslation": false,
+  "library": false
+}
