@@ -65,11 +65,8 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
       {
         nestId: "attributes",
         id: "attributes",
-        name: coreModule.api.Utils.i18n("ACTOR.TABS.ATTRIBUTES"),
-        groups: [
-          { ...groups.abilities, nestId: "attributes_abilities" },
-          { ...groups.skills, nestId: "attributes_skills" },
-        ],
+        name: coreModule.api.Utils.i18n("ACTOR.TABS.SKILLS"),
+        groups: [{ ...groups.skills, nestId: "attributes_skills" }],
       },
       {
         nestId: "effects",

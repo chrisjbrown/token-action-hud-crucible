@@ -75,7 +75,7 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
           await this.rollMagicItem(actor, actionId);
           break;
         case "skill":
-          this.rollSkill(event, actor, actionId);
+          actor.rollSkill(actionId, { dialog: true });
           break;
         case "utility":
           await this.performUtilityAction(event, actor, token, actionId);
