@@ -100,7 +100,6 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
     async #buildCharacterActions() {
       await Promise.all([
         this.#buildConditions(),
-        this.#buildBasicActions(),
         // this.#buildEffects(),
         // this.#buildFeatures(),
         // this.#buildInventory(),
@@ -109,11 +108,13 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
       // this.#buildAbilities("ability", "abilities");
       // this.#buildAbilities("check", "checks");
       // this.#buildAbilities("save", "saves");
-      this.#buildCombat();
       // this.#buildCounters();
       // this.#buildExhaustion();
       // this.#buildRests();
       // this.#buildSkills();
+      this.#buildSkills();
+      this.#buildBasicActions();
+      this.#buildCombat();
       this.#buildUtility();
     }
 
@@ -123,17 +124,17 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      * @returns {object}
      */
     async #buildVehicleActions() {
-      await Promise.all([
-        this.#buildConditions(),
-        this.#buildEffects(),
-        this.#buildFeatures(),
-        this.#buildInventory(),
-      ]);
-      this.#buildAbilities("ability", "abilities");
-      this.#buildAbilities("check", "checks");
-      this.#buildAbilities("save", "saves");
-      this.#buildCombat();
-      this.#buildUtility();
+      // await Promise.all([
+      //   this.#buildConditions(),
+      //   this.#buildEffects(),
+      //   this.#buildFeatures(),
+      //   this.#buildInventory(),
+      // ]);
+      // this.#buildAbilities("ability", "abilities");
+      // this.#buildAbilities("check", "checks");
+      // this.#buildAbilities("save", "saves");
+      // this.#buildCombat();
+      // this.#buildUtility();
     }
 
     /**
@@ -142,12 +143,13 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      * @returns {object}
      */
     async #buildMultipleTokenActions() {
-      this.#buildAbilities("ability", "abilities");
-      this.#buildAbilities("check", "checks");
-      this.#buildAbilities("save", "saves");
-      this.#buildCombat();
+      // this.#buildAbilities("ability", "abilities");
+      // this.#buildAbilities("check", "checks");
+      // this.#buildAbilities("save", "saves");
+      // this.#buildCombat();
+      // await this.#buildConditions();
+      // this.#buildRests();
       await this.#buildConditions();
-      this.#buildRests();
       this.#buildSkills();
       this.#buildUtility();
     }
@@ -158,51 +160,25 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      * @param {string} actionType
      * @param {string} groupId
      */
-    #buildAbilities(actionType, groupId) {
+    #buildSkills() {
       // Get abilities and exit if none exist
-      const abilities =
-        this.actor?.system.abilities || CONFIG.crucible.abilities;
-      if (abilities.length === 0) return;
+      const actionType = "skill";
+      const skills = this.actor?.skills || SYSTEM.SKILLS;
+      if (skills.length === 0) return;
 
       // Get actions
-      const actions = Object.entries(abilities)
-        .filter((ability) => abilities[ability[0]].value !== 0)
-        .map(([abilityId, ability]) => {
-          const name = CONFIG.crucible.abilities[abilityId].label;
-          const mod = groupId === "saves" ? ability?.save : ability?.mod;
-          return {
-            id: `${actionType}-${abilityId}`,
-            name: this.abbreviateSkills ? Utils.capitalize(abilityId) : name,
-            icon1:
-              groupId !== "checks"
-                ? this.#getProficiencyIcon(abilities[abilityId].proficient)
-                : "",
-            info1: this.actor
-              ? {
-                  text: coreModule.api.Utils.getModifier(mod),
-                  title: `${game.i18n.localize(
-                    "crucible.ActionAbil"
-                  )}: ${coreModule.api.Utils.getModifier(mod)}`,
-                }
-              : null,
-            info2:
-              this.actor && groupId === "abilities"
-                ? {
-                    text: `(${coreModule.api.Utils.getModifier(
-                      ability?.save
-                    )})`,
-                    title: `${game.i18n.localize(
-                      "crucible.SavingThrow"
-                    )}: ${coreModule.api.Utils.getModifier(ability?.save)}`,
-                  }
-                : null,
-            listName: this.#getListName(actionType, name),
-            system: { actionType, actionId: abilityId },
-          };
-        });
+      const actions = Object.entries(skills).map(([skillId]) => {
+        const name = skillId;
+        return {
+          id: skillId,
+          name: this.abbreviateSkills ? Utils.capitalize(skillId) : name,
+          listName: this.#getListName(actionType, name),
+          system: { actionType, actionId: skillId },
+        };
+      });
 
-      // Add actions to action list
-      this.addActions(actions, { id: groupId });
+      // Add skills to skill list
+      this.addActions(actions, { id: "skills" });
     }
 
     /**
@@ -324,7 +300,7 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      */
     #buildBasicActions() {
       // Get actions and exit if none exist
-      const actorActions = this.actor?.actions;
+      const actorActions = this.actor?.actions || SYSTEM.ACTION.DEFAULT_ACTIONS;
       if (actorActions.length === 0) return;
 
       // Get actions
@@ -792,37 +768,37 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      * Build skills
      * @private
      */
-    #buildSkills() {
-      // Get skills and exit if none exist
-      const skills = this.actor?.system.skills || CONFIG.crucible.skills;
-      if (skills.length === 0) return;
+    // #buildSkills() {
+    //   // Get skills and exit if none exist
+    //   const skills = this.actor?.system.skills || CONFIG.crucible.skills;
+    //   if (skills.length === 0) return;
 
-      // Get actions
-      const actionType = "skill";
-      const actions = Object.entries(skills)
-        .map(([id, skill]) => {
-          try {
-            const name = CONFIG.crucible.skills[id].label;
-            return {
-              id,
-              name: this.abbreviateSkills ? Utils.capitalize(id) : name,
-              icon1: this.#getProficiencyIcon(skill.value),
-              info1: this.actor
-                ? { text: coreModule.api.Utils.getModifier(skill.total) }
-                : "",
-              listName: this.#getListName(actionType, name),
-              system: { actionType, actionId: id },
-            };
-          } catch (error) {
-            coreModule.api.Logger.error(skill);
-            return null;
-          }
-        })
-        .filter((skill) => !!skill);
+    //   // Get actions
+    //   const actionType = "skill";
+    //   const actions = Object.entries(skills)
+    //     .map(([id, skill]) => {
+    //       try {
+    //         const name = CONFIG.crucible.skills[id].label;
+    //         return {
+    //           id,
+    //           name: this.abbreviateSkills ? Utils.capitalize(id) : name,
+    //           icon1: this.#getProficiencyIcon(skill.value),
+    //           info1: this.actor
+    //             ? { text: coreModule.api.Utils.getModifier(skill.total) }
+    //             : "",
+    //           listName: this.#getListName(actionType, name),
+    //           system: { actionType, actionId: id },
+    //         };
+    //       } catch (error) {
+    //         coreModule.api.Logger.error(skill);
+    //         return null;
+    //       }
+    //     })
+    //     .filter((skill) => !!skill);
 
-      // Add actions to HUD
-      this.addActions(actions, { id: "skills" });
-    }
+    //   // Add actions to HUD
+    //   this.addActions(actions, { id: "skills" });
+    // }
 
     /**
      * Build spells
@@ -1235,7 +1211,7 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      * @returns {object}
      */
     #getValidActors() {
-      const allowedTypes = ["character", "npc"];
+      const allowedTypes = ["hero", "adversary"];
       return this.actors.every((actor) => allowedTypes.includes(actor.type))
         ? this.actors
         : [];
@@ -1247,7 +1223,7 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
      * @returns {object}
      */
     #getValidTokens() {
-      const allowedTypes = ["character", "npc"];
+      const allowedTypes = ["hero", "adversary"];
       return this.actors.every((actor) => allowedTypes.includes(actor.type))
         ? this.tokens
         : [];
