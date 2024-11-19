@@ -171,6 +171,7 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
         const name = skillId;
         return {
           id: skillId,
+          img: SYSTEM.SKILLS[skillId].icon,
           name: this.abbreviateSkills ? Utils.capitalize(skillId) : name,
           listName: this.#getListName(actionType, name),
           system: { actionType, actionId: skillId },
@@ -307,9 +308,14 @@ Hooks.once("tokenActionHudCoreApiReady", async (coreModule) => {
       const actionType = "action";
       const actions = Object.entries(actorActions).map(([actionId, action]) => {
         const name = action.name;
+        const actionCost =
+          action.cost.action > 0 ? `(${action.cost.action}A)` : "";
+        const focusCost =
+          action.cost.focus > 0 ? `(${action.cost.focus}F)` : "";
         return {
           id: actionId,
-          name: name,
+          img: action.img,
+          name: `${name} ${actionCost} ${focusCost}`,
           listName: this.#getListName(actionType, name),
           system: { actionType, actionId: action.id },
         };
